@@ -1,20 +1,3 @@
-"""
-Leva os dados do quiz.db (SQLite) para o PostgreSQL. Rode UMA vez, no seu computador, depois de criar o PostgreSQL no Render.
-
-Como usar:
-    pip install flask psycopg2-binary
-    set DATABASE_URL=<External Database URL do PostgreSQL do Render>       (no Windows: set / no Linux e Mac: export)
-    python migrar_sqlite_para_postgres.py                  (usa o quiz.db que está na mesma pasta)
-    python migrar_sqlite_para_postgres.py caminho/quiz.db  (ou diga onde está o arquivo)
-
-O que ele faz:
-  - cria as tabelas no PostgreSQL (o app.py faz isso sozinho quando é importado);
-  - copia usuários, logins (senhas continuam como hash), partidas do ranking e emblemas, com os mesmos ids;
-  - se o quiz.db for antigo (sem a coluna pontos), calcula os pontos das partidas (acertos x valor do modo);
-  - confere se as quantidades bateram. Se algo der errado, nada é gravado (é tudo numa transação só).
-
-Ele se recusa a rodar se o PostgreSQL já tiver usuários, para não misturar dados. Use --forcar para ignorar esse aviso.
-"""
 import os
 import sqlite3
 import sys
