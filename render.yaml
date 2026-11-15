@@ -1,0 +1,25 @@
+# Blueprint do Render: cria o site/API (Web Service) e o PostgreSQL juntos.
+# Em render.com: New > Blueprint > escolha o repositório do projeto.
+# (Também dá para criar na mão: um PostgreSQL e um Web Service, como está no README.)
+databases:
+  - name: gennisquiz-db
+    plan: free
+
+services:
+  - type: web
+    name: gennisquiz
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --threads 4 --timeout 60 --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gennisquiz-db
+          property: connectionString
+      - key: GENNISQUIZ_SECRET        # chave que assina os logins; o Render gera uma e ela fica fixa
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID         # opcional: o ID do cliente do login com Google (veja LOGIN_GOOGLE.md)
+        sync: false

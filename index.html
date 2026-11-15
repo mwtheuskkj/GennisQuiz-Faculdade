@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-tema="escuro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GennisQuiz - Conhecimentos Gerais de TI</title>
+    <meta name="theme-color" content="#0b0b0b">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="icones/icone-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icones/icone-192.png">
+    <link rel="apple-touch-icon" href="icones/icone-180.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Filtros de daltonismo (usados pelo CSS: filter: url(#filtro-...)) -->
+    <svg class="svg-filtros" width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="filtro-protanopia" color-interpolation-filters="linearRGB">
+                <feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/>
+            </filter>
+            <filter id="filtro-deuteranopia" color-interpolation-filters="linearRGB">
+                <feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"/>
+            </filter>
+            <filter id="filtro-tritanopia" color-interpolation-filters="linearRGB">
+                <feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Abertura: fade-in / fade-out -->
+    <div id="splash" class="splash" role="status" aria-label="GennisQuiz - Conhecimentos Gerais de TI">
+        <div class="splash-conteudo">
+            <div class="enso" aria-hidden="true">
+                <svg viewBox="0 0 120 120">
+                    <circle class="enso-tracado" cx="60" cy="60" r="52" pathLength="100" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                </svg>
+                <span class="enso-kanji">問</span>
+            </div>
+            <h1 class="splash-titulo">GennisQuiz</h1>
+            <p class="splash-sub">Conhecimentos Gerais de TI</p>
+        </div>
+    </div>
+
+    <!-- Acessibilidade (mantida como no projeto original) -->
+    <header class="header-acessibilidade">
+        <button id="btnAcessibilidade" class="botao-acessibilidade"
+                title="Opções de acessibilidade"
+                aria-haspopup="true" aria-expanded="false" aria-controls="menuAcessibilidade">
+            <svg class="icone-ui" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.6" r="1.9"/><path d="M5 8.6l7 1.6 7-1.6M12 10.2v4.4M12 14.6l-3.2 6M12 14.6l3.2 6"/></svg>
+            <span>Acessibilidade</span>
+        </button>
+
+        <div id="menuAcessibilidade" class="menu-acessibilidade" role="group" aria-label="Opções de acessibilidade">
+            <button id="btnContraste" aria-pressed="false">
+                <svg class="icone-ui" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" class="icone-cheio"/></svg>
+                <span>Alto contraste</span>
+            </button>
+
+            <div class="controle-fonte">
+                <button id="btnFonteMenos" aria-label="Diminuir fonte">A-</button>
+                <button id="btnFonteMais" aria-label="Aumentar fonte">A+</button>
+            </div>
+
+            <button id="btnResetarAcessibilidade">
+                <svg class="icone-ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4.5 4.5v4.2h4.2"/></svg>
+                <span>Restaurar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Tela de entrada: login, cadastro e conclusão do cadastro com o Google -->
+    <section id="tela-login" class="tela tela-login" hidden>
+        <div class="login-card cartao">
+            <div class="selo" aria-hidden="true">問</div>
+            <h1 class="titulo-marca">GennisQuiz</h1>
+            <p class="subtitulo-marca">Conhecimentos Gerais de TI</p>
+
+            <div class="sub-abas" id="subAbas" role="tablist" aria-label="Entrar ou criar conta">
+                <button type="button" role="tab" id="subaba-entrar" data-sub="entrar" aria-selected="true" aria-controls="formLogin">Entrar</button>
+                <button type="button" role="tab" id="subaba-cadastro" data-sub="cadastro" aria-selected="false" aria-controls="formCadastro">Criar conta</button>
+            </div>
+
+            <p id="avisoLogin" class="aviso-login" role="status" hidden></p>
+
+            <!-- Entrar -->
+            <form id="formLogin" class="form-auth" novalidate>
+                <label for="loginId">E-mail ou nickname</label>
+                <input id="loginId" type="text" maxlength="120" autocomplete="username" spellcheck="false" placeholder="Ex.: matheus_dev">
+
+                <label for="loginSenha">Senha</label>
+                <input id="loginSenha" type="password" maxlength="100" autocomplete="current-password" placeholder="Sua senha">
+
+                <p id="erroLogin" class="erro-campo" role="alert"></p>
+                <button type="submit" id="btnEntrar" class="btn-primario">Entrar</button>
+            </form>
+
+            <!-- Criar conta -->
+            <form id="formCadastro" class="form-auth" novalidate hidden>
+                <label for="cadNick">Nickname</label>
+                <div class="campo-status">
+                    <input id="cadNick" type="text" maxlength="30" autocomplete="nickname" spellcheck="false" placeholder="Ex.: matheus_dev" aria-describedby="cadNickStatus">
+                    <span class="icone-status" data-icone-status="cadNick" aria-hidden="true"></span>
+                </div>
+                <p id="cadNickStatus" class="status-nick" aria-live="polite">Seu nome de jogador: <strong>—</strong></p>
+
+                <label for="cadEmail">E-mail</label>
+                <input id="cadEmail" type="email" maxlength="120" autocomplete="email" spellcheck="false" placeholder="voce@email.com">
+
+                <label for="cadSenha">Senha</label>
+                <input id="cadSenha" type="password" maxlength="100" autocomplete="new-password" placeholder="De 6 a 100 caracteres">
+
+                <label for="cadSenha2">Confirmar senha</label>
+                <input id="cadSenha2" type="password" maxlength="100" autocomplete="new-password" placeholder="Repita a senha">
+
+                <span class="rotulo-campo">Foto de perfil</span>
+                <div id="seletorFotoCadastro"></div>
+
+                <p id="erroCadastro" class="erro-campo" role="alert"></p>
+                <button type="submit" id="btnCadastrar" class="btn-primario">Criar conta</button>
+            </form>
+
+            <!-- Concluir cadastro vindo do Google (escolher nickname e foto) -->
+            <form id="formGoogle" class="form-auth" novalidate hidden>
+                <p class="texto-apoio">Conta do Google confirmada: <strong id="googleEmail"></strong>. Falta só escolher o seu nickname e a sua foto.</p>
+
+                <label for="gNick">Nickname</label>
+                <div class="campo-status">
+                    <input id="gNick" type="text" maxlength="30" autocomplete="nickname" spellcheck="false" aria-describedby="gNickStatus">
+                    <span class="icone-status" data-icone-status="gNick" aria-hidden="true"></span>
+                </div>
+                <p id="gNickStatus" class="status-nick" aria-live="polite">Seu nome de jogador: <strong>—</strong></p>
+
+                <span class="rotulo-campo">Foto de perfil</span>
+                <div id="seletorFotoGoogle"></div>
+
+                <p id="erroGoogle" class="erro-campo" role="alert"></p>
+                <div class="acoes-form">
+                    <button type="submit" id="btnConcluirGoogle" class="btn-primario">Concluir cadastro</button>
+                    <button type="button" id="btnCancelarGoogle">Cancelar</button>
+                </div>
+            </form>
+
+            <!-- Google -->
+            <div id="areaGoogle" class="area-google">
+                <div class="divisor"><span>ou</span></div>
+                <div id="googleBotao" class="google-botao"></div>
+                <p id="googleAviso" class="dica-campo" hidden></p>
+            </div>
+
+            <p class="status-banco" data-status></p>
+        </div>
+    </section>
+
+    <!-- Aplicativo (depois do login) -->
+    <div id="app" hidden>
+        <nav class="topbar" aria-label="Menu principal">
+            <div class="marca">
+                <span class="selo selo-p" aria-hidden="true">問</span>
+                <span class="marca-nome">GennisQuiz</span>
+            </div>
+
+            <div class="abas" role="tablist" aria-label="Seções do site">
+                <button class="aba ativa" role="tab" id="tab-inicio" data-aba="inicio" aria-selected="true" aria-controls="aba-inicio">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-6h4v6"/></svg>
+                    <span>Início</span>
+                </button>
+                <button class="aba" role="tab" id="tab-perfil" data-aba="perfil" aria-selected="false" aria-controls="aba-perfil">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="4"/><path d="M4.5 20.5c.6-4 3.7-6.2 7.5-6.2s6.9 2.2 7.5 6.2"/></svg>
+                    <span>Perfil</span>
+                </button>
+                <button class="aba" role="tab" id="tab-config" data-aba="config" aria-selected="false" aria-controls="aba-config">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8"/><circle cx="12" cy="12" r="6.6"/></svg>
+                    <span>Configurações</span>
+                </button>
+                <button class="aba" role="tab" id="tab-sobre" data-aba="sobre" aria-selected="false" aria-controls="aba-sobre">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5C4.7 20 4 19.3 4 18.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/></svg>
+                    <span>Sobre</span>
+                </button>
+                <button class="aba" role="tab" id="tab-dev" data-aba="dev" aria-selected="false" aria-controls="aba-dev" hidden>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 7 3.5 12l5 5"/><path d="M15.5 7l5 5-5 5"/><path d="M13.5 5 10.5 19"/></svg>
+                    <span>Desenvolvedor</span>
+                </button>
+            </div>
+
+            <button id="btnPerfil" class="chip-usuario" title="Abrir o meu perfil">
+                <span id="chipAvatar"></span>
+                <span id="chipNome"></span>
+            </button>
+        </nav>
+
+        <main class="container">
+
+            <!-- ============ ABA: INÍCIO ============ -->
+            <section id="aba-inicio" class="painel" role="tabpanel" aria-labelledby="tab-inicio">
+                <div class="grade-inicio" id="gradeInicio">
+
+                    <div class="coluna-principal">
+                        <!-- Seleção de Modo -->
+                        <div id="inicio-container">
+                            <p class="saudacao">ようこそ, <strong id="saudacaoNome"></strong></p>
+                            <h1 class="titulo-secao">Escolha o modo de jogo</h1>
+                            <p class="texto-apoio">15 perguntas sobre tecnologia. O cronômetro vale para cada pergunta e cada acerto soma pontos no ranking.</p>
+
+                            <div class="botoes-modo">
+                                <button class="btn-modo" data-modo="facil">
+                                    <span class="modo-kanji" aria-hidden="true">易</span>
+                                    <span class="modo-nome">Modo Fácil</span>
+                                    <span class="modo-tempo">1:00 por pergunta</span>
+                                    <span class="modo-desc">Dica sempre visível</span>
+                                    <span class="modo-ganho">+10 pts por acerto</span>
+                                </button>
+                                <button class="btn-modo" data-modo="normal">
+                                    <span class="modo-kanji" aria-hidden="true">中</span>
+                                    <span class="modo-nome">Modo Normal</span>
+                                    <span class="modo-tempo">0:30 por pergunta</span>
+                                    <span class="modo-desc">Dica quando você pedir</span>
+                                    <span class="modo-ganho">+20 pts por acerto</span>
+                                </button>
+                                <button class="btn-modo" data-modo="dificil">
+                                    <span class="modo-kanji" aria-hidden="true">難</span>
+                                    <span class="modo-nome">Modo Difícil</span>
+                                    <span class="modo-tempo">0:15 por pergunta</span>
+                                    <span class="modo-desc">Sem dicas · análise de código</span>
+                                    <span class="modo-ganho">+30 pts por acerto</span>
+                                </button>
+                                <button class="btn-modo btn-modo-radical" data-modo="radical">
+                                    <span class="modo-kanji" aria-hidden="true">極</span>
+                                    <span class="modo-nome">Modo Radical</span>
+                                    <span class="modo-tempo">30s / 20s / 15s por pergunta (muda com o nível)</span>
+                                    <span class="modo-desc">15 perguntas sorteadas dos 3 modos, em ordem aleatória</span>
+                                    <span class="modo-ganho">+10 / +20 / +30 pts conforme a pergunta</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Área Principal do Quiz -->
+                        <div id="quiz-container" hidden>
+                            <div class="quiz-topo">
+                                <button id="btnSair" class="btn-secundario">← Menu principal</button>
+                                <span id="rotuloModo" class="rotulo-modo"></span>
+                            </div>
+
+                            <div class="pergunta-header">
+                                <!-- Timer no canto esquerdo -->
+                                <div id="timer-display" role="timer" aria-label="Tempo restante" hidden>
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9.5 2.5h5"/></svg>
+                                    <span id="tempo">1:00</span>
+                                </div>
+
+                                <h2 id="question">Título da Pergunta</h2>
+
+                                <!-- Botão de dica no canto direito -->
+                                <button id="btnDica" class="icon-btn" title="Ver dica" aria-label="Mostrar dica" aria-expanded="false">?</button>
+                            </div>
+
+                            <div class="barra-tempo" id="barraTempoTrilho" aria-hidden="true"><div id="barraTempo"></div></div>
+
+                            <!-- Trecho de código das perguntas do modo Difícil -->
+                            <figure id="blocoCodigo" class="bloco-codigo" hidden>
+                                <figcaption id="blocoCodigoLinguagem"></figcaption>
+                                <pre tabindex="0"><code id="blocoCodigoTexto"></code></pre>
+                            </figure>
+
+                            <p id="textoDica" hidden></p>
+
+                            <div class="alternativas-container">
+                                <button class="alternativa" id="alternative1"></button>
+                                <button class="alternativa" id="alternative2"></button>
+                                <button class="alternativa" id="alternative3"></button>
+                                <button class="alternativa" id="alternative4"></button>
+                            </div>
+
+                            <div id="areaExplicacao" role="status" aria-live="polite" hidden>
+                                <h3 id="tituloResultado"></h3>
+                                <p id="textoExplicacao"></p>
+                            </div>
+
+                            <button id="btnProxima" class="btn-primario" hidden>Próxima Pergunta ➔</button>
+                        </div>
+
+                        <!-- Tela Final -->
+                        <div id="final" hidden>
+                            <h1 class="titulo-secao">Quiz finalizado!</h1>
+
+                            <div class="final-perfil">
+                                <span id="finalAvatar"></span>
+                                <div class="final-quem">
+                                    <strong id="finalNome"></strong>
+                                    <span id="finalModo"></span>
+                                </div>
+                            </div>
+
+                            <div id="finalLugar" class="final-lugar" aria-live="polite"></div>
+
+                            <h2 id="finalScore"></h2>
+                            <p class="final-pontos"><strong id="numPontosPartida">0</strong> pts ganhos nesta partida</p>
+
+                            <div class="barras" aria-hidden="true">
+                                <div class="barra-linha">
+                                    <span class="barra-rotulo">Acertos</span>
+                                    <div class="barra-trilho"><div id="barraAcertos" class="barra-preench barra-acertos"></div></div>
+                                    <span class="barra-num" id="numAcertos">0</span>
+                                </div>
+                                <div class="barra-linha">
+                                    <span class="barra-rotulo">Erros</span>
+                                    <div class="barra-trilho"><div id="barraErros" class="barra-preench barra-erros"></div></div>
+                                    <span class="barra-num" id="numErros">0</span>
+                                </div>
+                            </div>
+
+                            <p id="mensagemFinal"></p>
+                            <span id="emojiFinal" class="emoji-final" aria-hidden="true"></span>
+                            <button id="btnReiniciar" class="btn-primario">Voltar ao Início</button>
+                        </div>
+                    </div>
+
+                    <!-- Ranking na lateral direita -->
+                    <aside class="ranking cartao" id="painelRanking" aria-labelledby="tituloRanking">
+                        <h2 id="tituloRanking"><span class="kanji-titulo" aria-hidden="true">番付</span> Ranking</h2>
+                        <div class="filtros" role="group" aria-label="Filtrar ranking por modo">
+                            <button class="filtro" data-filtro="geral" aria-pressed="true">Geral</button>
+                            <button class="filtro" data-filtro="facil" aria-pressed="false">Fácil</button>
+                            <button class="filtro" data-filtro="normal" aria-pressed="false">Normal</button>
+                            <button class="filtro" data-filtro="dificil" aria-pressed="false">Difícil</button>
+                            <button class="filtro" data-filtro="radical" aria-pressed="false">Radical</button>
+                        </div>
+                        <ol id="listaRanking" class="lista-ranking"></ol>
+                        <p id="rankingVazio" class="texto-apoio" hidden>Ainda não há pontuações. Seja o primeiro!</p>
+                        <ul class="legenda-coroas" aria-label="Legenda das coroas">
+                            <li><span class="mini-coroa" data-coroa="1"></span> Ouro · 1º</li>
+                            <li><span class="mini-coroa" data-coroa="2"></span> Prata · 2º</li>
+                            <li><span class="mini-coroa" data-coroa="3"></span> Bronze · 3º</li>
+                        </ul>
+                        <p class="status-banco" data-status></p>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- ============ ABA: PERFIL ============ -->
+            <section id="aba-perfil" class="painel" role="tabpanel" aria-labelledby="tab-perfil" hidden>
+                <h1 class="titulo-secao">Perfil</h1>
+
+                <div id="perfilConteudo"></div>
+
+                <div class="cartao cartao-conf cartao-conta" id="cartaoConta">
+                    <h2>Minha conta</h2>
+                    <p class="texto-apoio" id="contaInfo"></p>
+                    <div class="acoes-linha">
+                        <button id="btnEditarPerfil" class="btn-primario">Editar perfil</button>
+                        <button id="btnAlterarNick">Alterar nickname</button>
+                        <button id="btnAlterarSenha">Alterar senha</button>
+                        <button id="btnSairConta">Sair da conta</button>
+                    </div>
+                    <p id="notaSenhaGoogle" class="dica-campo" hidden>Sua conta usa o Google: a senha é gerenciada direto na sua conta Google.</p>
+                    <div class="zona-perigo">
+                        <p class="texto-apoio">Excluir a conta apaga o seu perfil, as suas pontuações e os seus emblemas do banco de dados. Não dá para desfazer.</p>
+                        <button id="btnExcluirConta" class="btn-perigo">Excluir minha conta</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ABA: DESENVOLVEDOR (só o dono) ============ -->
+            <section id="aba-dev" class="painel" role="tabpanel" aria-labelledby="tab-dev" hidden>
+                <h1 class="titulo-secao">Desenvolvedor</h1>
+                <p class="texto-apoio">Painel do desenvolvedor: edite o perfil de qualquer usuário, libere emblemas (todos os que existirem, inclusive os futuros) e dê acesso a este painel para outras contas. Só quem tem o emblema Dono / Criador ou Desenvolvedor acessa.</p>
+                <div class="cartao cartao-conf">
+                    <label class="rotulo-campo" for="devBusca">Buscar usuário <small id="devTotal"></small></label>
+                    <input id="devBusca" type="text" maxlength="30" autocomplete="off" spellcheck="false" placeholder="Digite parte do nickname">
+                    <div id="devLista" class="dev-lista"></div>
+                    <div id="devNav" class="historico-nav" hidden>
+                        <button type="button" id="devAnterior" class="seta-pagina" aria-label="Página anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                        <span id="devPagina" class="historico-pagina"></span>
+                        <button type="button" id="devProxima" class="seta-pagina" aria-label="Próxima página"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ABA: CONFIGURAÇÕES ============ -->
+            <section id="aba-config" class="painel" role="tabpanel" aria-labelledby="tab-config" hidden>
+                <h1 class="titulo-secao">Configurações</h1>
+
+                <div class="grade-cartoes">
+                    <div class="cartao cartao-conf">
+                        <h2>Tema</h2>
+                        <p class="texto-apoio">O tema padrão é o preto. Você pode trocar para o tema claro.</p>
+                        <button id="btnTema" class="interruptor-tema" role="switch" aria-checked="false" aria-label="Alternar entre tema escuro e claro">
+                            <span class="trilho" aria-hidden="true">
+                                <span class="bola">
+                                    <svg class="icone-lua" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+                                    <svg class="icone-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg>
+                                </span>
+                            </span>
+                            <span id="temaTexto">Tema escuro</span>
+                        </button>
+                    </div>
+
+                    <div class="cartao cartao-conf cartao-largo">
+                        <h2>Visão de daltonismo</h2>
+                        <p class="texto-apoio">Veja o quiz como pessoas com deficiência na visão de cores enxergam. Escolha um tipo e o site inteiro é renderizado com ele. O quiz também não depende só de cor: acertos e erros têm ícone e estilo diferentes, e as coroas têm número.</p>
+
+                        <fieldset class="opcoes-dalt">
+                            <legend class="sr-only">Tipo de daltonismo</legend>
+                            <label class="opcao-dalt"><input type="radio" name="daltonismo" value="nenhum" checked><span><strong>Nenhum</strong><small>Visão normal</small></span></label>
+                            <label class="opcao-dalt"><input type="radio" name="daltonismo" value="protanopia"><span><strong>Protanopia</strong><small>Sem cone vermelho</small></span></label>
+                            <label class="opcao-dalt"><input type="radio" name="daltonismo" value="deuteranopia"><span><strong>Deuteranopia</strong><small>Sem cone verde</small></span></label>
+                            <label class="opcao-dalt"><input type="radio" name="daltonismo" value="tritanopia"><span><strong>Tritanopia</strong><small>Sem cone azul</small></span></label>
+                        </fieldset>
+
+                        <div class="previa-dalt" aria-label="Pré-visualização das cores do quiz">
+                            <span class="previa-titulo">Pré-visualização</span>
+                            <div class="previa-linha">
+                                <span id="previaCoroas" class="previa-coroas"></span>
+                                <span class="previa-chip previa-certo">✔ Correta</span>
+                                <span class="previa-chip previa-errado">✖ Errada</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ABA: SOBRE ============ -->
+            <section id="aba-sobre" class="painel" role="tabpanel" aria-labelledby="tab-sobre" hidden>
+                <h1 class="titulo-secao">Sobre o GennisQuiz</h1>
+
+                <div class="grade-cartoes">
+                    <div class="cartao cartao-conf cartao-largo">
+                        <h2>O que é</h2>
+                        <p class="texto-corrido">O GennisQuiz é uma forma simples e divertida de testar e reforçar os conhecimentos de quem estuda ou trabalha com tecnologia. São perguntas de conhecimentos gerais de TI, com dica, correção na hora e um resumo explicando o porquê de cada resposta.</p>
+                    </div>
+
+                    <div class="cartao cartao-conf">
+                        <h2>O projeto</h2>
+                        <p class="texto-corrido">Este é um projeto interdisciplinar da faculdade, feito por alunos de <strong>Ciência da Computação</strong> e de <strong>Análise e Desenvolvimento de Sistemas</strong>.</p>
+                    </div>
+
+                    <div class="cartao cartao-conf">
+                        <h2>Modos de jogo</h2>
+                        <ul class="lista-simples">
+                            <li><strong>Fácil:</strong> 1:00 por pergunta, dica sempre visível, +10 pts por acerto</li>
+                            <li><strong>Normal:</strong> 0:30 por pergunta, dica sob demanda, +20 pts por acerto</li>
+                            <li><strong>Difícil:</strong> 0:15 por pergunta, sem dicas, análise de código, +30 pts por acerto</li>
+                            <li><strong>Radical:</strong> 15 perguntas sorteadas dos três modos. O tempo depende do nível que cair (fácil 0:30, normal 0:20, difícil 0:15) e cada acerto vale os pontos desse nível</li>
+                        </ul>
+                    </div>
+
+                    <div class="cartao cartao-conf cartao-largo">
+                        <h2>GennisCode</h2>
+                        <p class="texto-corrido">O GennisCode é o nosso outro projeto: um site para ajudar as pessoas a estudarem conteúdos de programação e tecnologia por meios gratuitos, sem gastar nada. Vale a visita!</p>
+                        <a class="btn-link" href="https://gennis-code-stg7.vercel.app/" target="_blank" rel="noopener noreferrer">Explorar o GennisCode ↗</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Criadores: logo abaixo do site, passando para o lado em looping -->
+    <footer id="rodapeCriadores" class="rodape-criadores" hidden>
+        <h2 class="rodape-titulo">Criadores e desenvolvedores</h2>
+        <div class="marquee">
+            <div class="marquee-trilho" id="marqueeTrilho"></div>
+        </div>
+    </footer>
+
+    <!-- Pop-up: editar perfil (foto, banner e biografia) -->
+    <div id="modalEditar" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloEditar">
+        <div class="modal-caixa modal-grande cartao modal-form">
+            <h2 id="tituloEditar">Editar perfil</h2>
+
+            <span class="rotulo-campo">Foto de perfil</span>
+            <div id="seletorFotoEditar"></div>
+
+            <label class="rotulo-campo" for="editarPronomes">Pronome <small>(opcional)</small></label>
+            <input id="editarPronomes" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Ex.: ele/dele, ela/dela, elu/delu">
+
+            <span class="rotulo-campo">Banner de fundo</span>
+            <div class="banner-edicao">
+                <div id="bannerPrevia" class="banner-previa"></div>
+                <div class="acoes-linha">
+                    <button type="button" id="btnEscolherBanner">Enviar banner</button>
+                    <button type="button" id="btnAjustarBanner">Ajustar banner</button>
+                    <button type="button" id="btnRemoverBanner">Remover banner</button>
+                </div>
+                <input type="file" id="inputBanner" accept="image/png,image/jpeg,image/webp,image/gif" class="sr-only" tabindex="-1">
+            </div>
+            <small class="dica-campo">PNG, JPG, WEBP ou GIF animado (até 4 MB).</small>
+
+            <label class="rotulo-campo" for="editarBio">Biografia <small id="contaBio">0/200</small></label>
+            <textarea id="editarBio" maxlength="200" rows="3" placeholder="Conte um pouco sobre você"></textarea>
+
+            <p id="erroEditar" class="erro-campo" role="alert"></p>
+            <div class="modal-acoes">
+                <button id="btnEditarSalvar" class="btn-primario">Salvar</button>
+                <button id="btnEditarCancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up do desenvolvedor: editar o perfil de outro usuário -->
+    <div id="modalDev" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="devTitulo">
+        <div class="modal-caixa modal-grande cartao modal-form">
+            <h2 id="devTitulo">Editar usuário</h2>
+            <div class="dev-alvo"><span id="devAvatar"></span></div>
+
+            <label class="rotulo-campo" for="devNick">Nickname <small>(o dono troca sem a espera de 7 dias)</small></label>
+            <input id="devNick" type="text" maxlength="20" autocomplete="off" spellcheck="false">
+
+            <label class="rotulo-campo" for="devPronomes">Pronome</label>
+            <input id="devPronomes" type="text" maxlength="20" autocomplete="off" spellcheck="false">
+
+            <label class="rotulo-campo" for="devBio">Biografia</label>
+            <textarea id="devBio" maxlength="200" rows="3"></textarea>
+
+            <span class="rotulo-campo">Moderação</span>
+            <div class="acoes-linha">
+                <button type="button" id="btnDevRemoverFoto">Remover foto</button>
+                <button type="button" id="btnDevRemoverBanner">Remover banner</button>
+            </div>
+
+            <span class="rotulo-campo">Pontos <small>(fácil de 10 em 10, normal de 20 em 20, difícil de 30 em 30; o radical não entra)</small></span>
+            <div id="devPontos" class="dev-pontos"></div>
+
+            <span class="rotulo-campo">Emblemas <small>(todos os do banco, inclusive os futuros)</small></span>
+            <div id="devEmblemas" class="dev-emblemas-lista"></div>
+
+            <p id="erroDev" class="erro-campo" role="alert"></p>
+            <div class="modal-acoes">
+                <button id="btnDevSalvar" class="btn-primario">Salvar</button>
+                <button id="btnDevFechar" data-foco>Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: ajustar foto ou banner antes de salvar (arrastar e zoom) -->
+    <div id="modalAjuste" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloAjuste">
+        <div class="modal-caixa modal-grande cartao modal-form">
+            <h2 id="tituloAjuste">Ajustar foto de perfil</h2>
+            <p class="texto-apoio">Arraste a imagem para posicionar e use o zoom para aproximar.</p>
+            <div id="ajusteQuadro" class="ajuste-quadro" tabindex="0" aria-label="Área de enquadramento. Arraste ou use as setas do teclado."></div>
+            <label class="rotulo-campo" for="ajusteZoom">Zoom</label>
+            <input id="ajusteZoom" type="range" min="1" max="4" step="0.01" value="1">
+            <div class="modal-acoes">
+                <button id="btnAjusteAplicar" class="btn-primario">Aplicar</button>
+                <button id="btnAjusteCancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: alterar nickname -->
+    <div id="modalNick" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloNick">
+        <div class="modal-caixa cartao modal-form">
+            <h2 id="tituloNick">Alterar nickname</h2>
+            <p class="texto-apoio">Depois de trocar, você só poderá alterar de novo depois de 7 dias.</p>
+            <label class="rotulo-campo" for="novoNick">Novo nickname</label>
+            <div class="campo-status">
+                <input id="novoNick" type="text" maxlength="30" spellcheck="false" autocomplete="off" aria-describedby="novoNickStatus">
+                <span class="icone-status" data-icone-status="novoNick" aria-hidden="true"></span>
+            </div>
+            <p id="novoNickStatus" class="status-nick" aria-live="polite">Seu nome de jogador: <strong>—</strong></p>
+            <p id="erroNick" class="erro-campo" role="alert"></p>
+            <div class="modal-acoes">
+                <button id="btnNickSalvar" class="btn-primario">Salvar</button>
+                <button id="btnNickCancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: alterar senha -->
+    <div id="modalSenha" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloSenha">
+        <div class="modal-caixa cartao modal-form">
+            <h2 id="tituloSenha">Alterar senha</h2>
+            <p class="texto-apoio">Depois de trocar, você só poderá alterar de novo depois de 7 dias.</p>
+            <label class="rotulo-campo" for="senhaAtual">Senha atual</label>
+            <input id="senhaAtual" type="password" maxlength="100" autocomplete="current-password">
+            <label class="rotulo-campo" for="senhaNova">Nova senha</label>
+            <input id="senhaNova" type="password" maxlength="100" autocomplete="new-password" placeholder="De 6 a 100 caracteres">
+            <label class="rotulo-campo" for="senhaNova2">Confirmar nova senha</label>
+            <input id="senhaNova2" type="password" maxlength="100" autocomplete="new-password">
+            <p id="erroSenha" class="erro-campo" role="alert"></p>
+            <div class="modal-acoes">
+                <button id="btnSenhaSalvar" class="btn-primario">Salvar</button>
+                <button id="btnSenhaCancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up "Iniciando em..." (3 segundos) antes de começar o quiz -->
+    <div id="modalContagem" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloContagem">
+        <div class="modal-caixa cartao modal-contagem">
+            <h2 id="tituloContagem">Iniciando em...</h2>
+            <div id="contagemNumero" class="contagem-numero" aria-live="assertive">3</div>
+            <p class="texto-apoio">Prepare-se! O tempo da primeira pergunta só começa depois da contagem.</p>
+        </div>
+    </div>
+
+    <!-- Pop-up animado: troca bloqueada pelos 7 dias -->
+    <div id="modalEspera" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloEspera" aria-describedby="textoEspera">
+        <div class="modal-caixa cartao modal-espera">
+            <div class="ampulheta" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                    <path class="amp-vidro" d="M12 6h24M12 42h24M14 6c0 9 6 12 10 18-4 6-10 9-10 18M34 6c0 9-6 12-10 18 4 6 10 9 10 18"/>
+                    <path class="amp-areia-cima" d="M17 8c1 5 4 7 7 11 3-4 6-6 7-11z"/>
+                    <path class="amp-areia-baixo" d="M17 40c1-5 4-7 7-10 3 3 6 5 7 10z"/>
+                    <line class="amp-fio" x1="24" y1="22" x2="24" y2="34"/>
+                </svg>
+            </div>
+            <h2 id="tituloEspera">Calma, ainda não dá!</h2>
+            <p id="textoEspera" class="texto-apoio"></p>
+            <p class="espera-faltam"><strong id="esperaDias">0</strong> <span id="esperaDiasTexto">dias</span></p>
+            <div id="esperaPontos" class="espera-pontos" aria-hidden="true"></div>
+            <p id="esperaData" class="dica-campo"></p>
+            <div class="modal-acoes">
+                <button id="btnEsperaOk" class="btn-primario" data-foco>Entendi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up 1 da exclusão: confirmar -->
+    <div id="modalExcluir1" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloExcluir1" aria-describedby="textoExcluir1">
+        <div class="modal-caixa cartao">
+            <h2 id="tituloExcluir1">Deseja mesmo excluir a sua conta?</h2>
+            <p id="textoExcluir1" class="texto-apoio">Seu perfil, suas pontuações e seus emblemas serão apagados do banco de dados e ninguém mais terá acesso a eles.</p>
+            <div class="modal-acoes">
+                <button id="btnExcluir1Sim" class="btn-perigo">Sim</button>
+                <button id="btnExcluir1Nao" data-foco>Não</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up 2 da exclusão: nickname e senha -->
+    <div id="modalExcluir2" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloExcluir2">
+        <div class="modal-caixa cartao modal-form">
+            <h2 id="tituloExcluir2">Confirme para excluir</h2>
+            <p id="textoExcluir2" class="texto-apoio">Digite o seu nickname e a sua senha para apagar a conta de vez.</p>
+            <label class="rotulo-campo" for="excluirNick">Nickname</label>
+            <input id="excluirNick" type="text" maxlength="30" spellcheck="false" autocomplete="off">
+            <div id="excluirSenhaGrupo" class="grupo-campo">
+                <label class="rotulo-campo" for="excluirSenha">Senha</label>
+                <input id="excluirSenha" type="password" maxlength="100" autocomplete="current-password">
+            </div>
+            <p id="erroExcluir" class="erro-campo" role="alert"></p>
+            <div class="modal-acoes">
+                <button id="btnExcluir2Confirmar" class="btn-perigo">Excluir definitivamente</button>
+                <button id="btnExcluir2Cancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: perfil de outro jogador -->
+    <div id="modalVerPerfil" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-label="Perfil do jogador">
+        <div class="modal-caixa modal-perfil cartao">
+            <div id="verPerfilConteudo"></div>
+            <div class="modal-acoes">
+                <button id="btnVerPerfilFechar" data-foco>Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso rápido (emblema novo, conta excluída, etc.) -->
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <!-- Pop-up: confirmar saída do quiz (fundo com blur) -->
+    <div id="modalSair" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloSair" aria-describedby="textoSair">
+        <div class="modal-caixa cartao">
+            <h2 id="tituloSair">Deseja realmente sair do Quiz?</h2>
+            <p id="textoSair" class="texto-apoio">Você voltará ao menu principal e perderá o progresso desta partida.</p>
+            <div class="modal-acoes">
+                <button id="btnSairSim" class="btn-primario">Sim</button>
+                <button id="btnSairNao" data-foco>Não</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: aceitar o desafio do modo Radical (aparece toda vez que o jogador escolhe esse modo) -->
+    <div id="modalRadical" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloRadical" aria-describedby="textoRadical">
+        <div class="modal-caixa cartao">
+            <h2 id="tituloRadical">Aceita o desafio Radical?</h2>
+            <p id="textoRadical" class="texto-apoio">Neste modo caem perguntas aleatórias dos modos Fácil, Normal e Difícil (código), e elas mudam toda vez que você jogar de novo. O tempo muda conforme o nível da pergunta (30s, 20s ou 15s) e cada acerto vale +10, +20 ou +30 pts.</p>
+            <div class="modal-acoes">
+                <button id="btnRadicalSim" class="btn-primario">Sim</button>
+                <button id="btnRadicalNao" data-foco>Não</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: perfil do criador no GitHub -->
+    <div id="modalGithub" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="ghNome">
+        <div class="modal-caixa cartao">
+            <span id="ghAvatar"></span>
+            <h2 id="ghNome"></h2>
+            <p id="ghUser" class="texto-apoio"></p>
+            <div class="modal-acoes">
+                <a id="ghLink" class="btn-link btn-link-cheio" href="#" target="_blank" rel="noopener noreferrer" data-foco>Acessar Perfil para Saber Mais ↗</a>
+                <button id="btnGhFechar">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
