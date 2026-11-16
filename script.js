@@ -584,6 +584,9 @@ let bannerTemp = null;
 let appAberto = false;
 let bancoOnline = null;      // null = ainda não testado
 let filtroRanking = "geral";
+const RANKING_POR_PAGINA = 5;     // quantos jogadores aparecem por vez no ranking
+let paginaRanking = 1;
+let listaCompletaRanking = [];
 
 const ESCALA_MIN = 0.8;
 const ESCALA_MAX = 1.6;
@@ -870,11 +873,28 @@ async function salvarPartida(modo, acertos, total, porNivel) {
 }
 
 async function atualizarRanking() {
-    const partidas = await buscarRanking(filtroRanking, 10);
-    const lista = (partidas || []).slice(0, 10);
+    const partidas = await buscarRanking(filtroRanking, 500);
+    listaCompletaRanking = partidas || [];
+    desenharRanking();
+
+    if (partidas === null) {
+        rankingVazio.textContent = "Não foi possível carregar o ranking do banco de dados.";
+    } else {
+        rankingVazio.textContent = "Ainda não há pontos neste ranking. Seja o primeiro!";
+    }
+    rankingVazio.hidden = listaCompletaRanking.length > 0;
+    return listaCompletaRanking;
+}
+
+// mostra só a página atual do ranking (5 jogadores), com as setinhas embaixo
+function desenharRanking() {
+    const totalPaginas = Math.max(1, Math.ceil(listaCompletaRanking.length / RANKING_POR_PAGINA));
+    paginaRanking = Math.min(Math.max(1, paginaRanking), totalPaginas);
+    const inicio = (paginaRanking - 1) * RANKING_POR_PAGINA;
+    const lista = listaCompletaRanking.slice(inicio, inicio + RANKING_POR_PAGINA);
 
     listaRanking.replaceChildren(...lista.map((r, i) => {
-        const pos = i + 1;
+        const pos = inicio + i + 1;     // a posição continua contando de verdade nas outras páginas
         const eVoce = usuario && r.jogador === usuario.nickname;
         const li = el("li", "item-ranking clicavel" + (eVoce ? " voce" : ""));
         li.tabIndex = 0;
@@ -905,14 +925,14 @@ async function atualizarRanking() {
         return li;
     }));
 
-    if (partidas === null) {
-        rankingVazio.textContent = "Não foi possível carregar o ranking do banco de dados.";
-    } else {
-        rankingVazio.textContent = "Ainda não há pontos neste ranking. Seja o primeiro!";
-    }
-    rankingVazio.hidden = lista.length > 0;
-    return lista;
+    $("rankingNav").hidden = totalPaginas <= 1;
+    $("rankingPagina").textContent = `${paginaRanking} / ${totalPaginas}`;
+    $("rankingAnterior").disabled = paginaRanking <= 1;
+    $("rankingProxima").disabled = paginaRanking >= totalPaginas;
 }
+
+$("rankingAnterior").addEventListener("click", () => { paginaRanking--; desenharRanking(); });
+$("rankingProxima").addEventListener("click", () => { paginaRanking++; desenharRanking(); });
 
 // ==========================================
 // 7. ABERTURA, LOGIN, CADASTRO E PERFIL
@@ -2837,6 +2857,7 @@ btnReiniciar.addEventListener("click", voltarAoInicio);
 document.querySelectorAll(".filtro").forEach(btn => {
     btn.addEventListener("click", () => {
         filtroRanking = btn.dataset.filtro;
+        paginaRanking = 1;      // trocou de modo: volta para a primeira página
         document.querySelectorAll(".filtro").forEach(b => b.setAttribute("aria-pressed", b === btn));
         atualizarRanking();
     });
