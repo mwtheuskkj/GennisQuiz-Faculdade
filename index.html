@@ -325,6 +325,11 @@
                             <button class="filtro" data-filtro="radical" aria-pressed="false">Radical</button>
                         </div>
                         <ol id="listaRanking" class="lista-ranking"></ol>
+                        <div id="rankingNav" class="historico-nav" hidden>
+                            <button type="button" id="rankingAnterior" class="seta-pagina" aria-label="Jogadores anteriores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                            <span id="rankingPagina" class="historico-pagina">1 / 1</span>
+                            <button type="button" id="rankingProxima" class="seta-pagina" aria-label="Próximos jogadores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                        </div>
                         <p id="rankingVazio" class="texto-apoio" hidden>Ainda não há pontuações. Seja o primeiro!</p>
                         <ul class="legenda-coroas" aria-label="Legenda das coroas">
                             <li><span class="mini-coroa" data-coroa="1"></span> Ouro · 1º</li>
